@@ -1,3 +1,9 @@
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -150,6 +156,32 @@ public class cadastroVIEW extends javax.swing.JFrame {
         
         ProdutosDAO produtodao = new ProdutosDAO();
         produtodao.cadastrarProduto(produto);
+        
+        conectaDAO conector = new conectaDAO();
+        if (conector.conectar()) {
+            try {
+
+                Connection conn = conector.conn;
+                Statement st = conn.createStatement();
+                String sql = "INSERT INTO produtos (nome,valor) VALUES ('"
+                + nome + "', '" + valor + "')";
+
+                st.executeUpdate(sql);
+                JOptionPane.showMessageDialog(this, "Produto cadastrado com sucesso! ", "Cadastro", JOptionPane.DEFAULT_OPTION);
+                conector.desconectar();
+
+                //isso aqui é para os dados serem limpos após o cadastro
+                cadastroNome.setText("");
+            cadastroValor.setText("");
+            
+                
+                
+            } catch (SQLException ex) {
+                System.out.println("Erro ao inserir os dados: " + ex.getMessage());
+            }
+        }
+
+        
         
     }//GEN-LAST:event_btnCadastrarActionPerformed
 

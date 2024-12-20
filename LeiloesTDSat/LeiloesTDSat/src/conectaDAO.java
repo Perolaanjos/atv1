@@ -1,6 +1,7 @@
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
@@ -17,17 +18,32 @@ import javax.swing.JOptionPane;
  */
 public class conectaDAO {
     
-    public Connection connectDB(){
-        Connection conn = null;
-        
-        try {
-        
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/uc11?user=root&password=mysql1995");
+     Connection conn;
+    public boolean conectar() {
+       //usando o try e catch para conectar o banco de dados
+     try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/uc11","root","mysql1995"); 
+               System.out.println("Conexão realizada!");
+                 java.sql.Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM produtos"); 
+            rs.next();
+            System.out.println(rs.getInt("COUNT(*)"));
+            return true;
             
-        } catch (SQLException erro){
-            JOptionPane.showMessageDialog(null, "Erro ConectaDAO" + erro.getMessage());
+        } catch (ClassNotFoundException | SQLException ex) {
+            System.out.println("Falha na conexão com o banco de dados " + ex.getMessage());
+            return false;
         }
-        return conn;
-    }
+   
+   }
+   public void desconectar(){
+        try {
+            conn.close();
+        } catch (SQLException ex) {
+        
+        }
+    
+}
     
 }
