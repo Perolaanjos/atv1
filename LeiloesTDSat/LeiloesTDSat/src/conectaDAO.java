@@ -17,33 +17,36 @@ import javax.swing.JOptionPane;
  * @author Adm
  */
 public class conectaDAO {
-    
-     Connection conn;
-    public boolean conectar() {
-       //usando o try e catch para conectar o banco de dados
-     try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/uc11","root","mysql1995"); 
-               System.out.println("Conexão realizada!");
-                 java.sql.Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM produtos"); 
-            rs.next();
-            System.out.println(rs.getInt("COUNT(*)"));
-            return true;
-            
-        } catch (ClassNotFoundException | SQLException ex) {
-            System.out.println("Falha na conexão com o banco de dados " + ex.getMessage());
-            return false;
-        }
-   
-   }
-   public void desconectar(){
+
+    Connection conn = null;
+
+    public Connection conectar() {
         try {
-            conn.close();
-        } catch (SQLException ex) {
-        
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/uc11?useSSL=false", "root", "mysql1995"); 
+            System.out.println("Conexão realizada!");
+
+           
+            java.sql.Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM produtos");
+              rs.next() ;
+               System.out.println("Número de produtos: " + rs.getInt(1));
+
+            return conn; 
+              } catch (ClassNotFoundException | SQLException ex) {
+                 System.out.println("Falha na conexão com o banco de dados! " + ex.getMessage());
+                   return null; 
         }
-    
-}
-    
+    }
+
+    public void desconectar() {
+        try {
+            if (conn != null) {
+                 conn.close();
+              System.out.println("Conexão encerrada.");
+            }
+        } catch (SQLException ex) {
+          System.out.println("Erro ao encerrar conexão: " + ex.getMessage());
+        }
+    }
 }
