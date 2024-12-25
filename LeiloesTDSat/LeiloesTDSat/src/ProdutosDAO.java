@@ -23,7 +23,7 @@ public class ProdutosDAO {
     ArrayList<ProdutosDTO> listagem = new ArrayList<>();
     
     public void cadastrarProduto (ProdutosDTO produto){
-     conn = new conectaDAO().conectar(); // Inicializa a conexão
+     conn = new conectaDAO().conectar(); 
     if (conn == null) {
         JOptionPane.showMessageDialog(null, "Erro: conexão não foi estabelecida.");
         return;
@@ -90,17 +90,108 @@ public class ProdutosDAO {
              return listagem;
         }
        
-    public void venderProduto (ProdutosDTO p) {
+    public boolean venderProduto(ProdutosDTO p) {
+    conn = new conectaDAO().conectar();
     
+    if (conn == null) {
+        JOptionPane.showMessageDialog(null, "Erro: não foi possível estabelecer conexão com o banco.");
+        return false;
+    }
+
+    String sql = "UPDATE produtos SET status = 'vendido' WHERE id = ?";
+
+    try {
+        prep = conn.prepareStatement(sql);
+        prep.setInt(1, p.getId());
+        int rowsAffected = prep.executeUpdate(); 
+
+        if (rowsAffected > 0) {
+            JOptionPane.showMessageDialog(null, "Produto vendido com sucesso!");
+            return true;  
+        } else {
+            JOptionPane.showMessageDialog(null, "Produto não encontrado.");
+            return false;  
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Erro ao vender produto: " + e.getMessage());
+        return false; 
+    } finally {
+        try {
+            if (prep != null) prep.close();
+            if (conn != null) conn.close();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Erro ao fechar conexão: " + ex.getMessage());
+        }
+    }
+
+
     }
     public ArrayList<ProdutosDTO> listarProdutosVendidos(){
-ArrayList<ProdutosDTO> listaVendidos = null;
-return listaVendidos;
+        conn = new conectaDAO().conectar(); 
+ ArrayList<ProdutosDTO> listaVendidos = new ArrayList<>();
+ String sql = "SELECT * FROM produtos WHERE status = 'vendido'";
+    
+    try {
+        prep = conn.prepareStatement(sql);
+        resultset = prep.executeQuery();
+
+        
+        while (resultset.next()) {
+            ProdutosDTO produto = new ProdutosDTO();
+            produto.setId(resultset.getInt("id"));
+            produto.setNome(resultset.getString("nome"));
+            produto.setValor(resultset.getInt("valor"));
+            produto.setStatus(resultset.getString("status"));
+            listaVendidos.add(produto); 
+        }
+        
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Erro ao listar produtos vendidos: " + e.getMessage());
+    } finally {
+        try {
+           
+            if (resultset != null) resultset.close();
+            if (prep != null) prep.close();
+            if (conn != null) conn.close();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Erro ao fechar conexão: " + ex.getMessage());
+        }
+    }
+    
+    return listaVendidos;  
+}
+   public void excluirProduto(int idProduto) {
+    conn = new conectaDAO().conectar();  // Inicializa a conexão
+    String sql = "DELETE FROM produtos WHERE id = 7";  // SQL para deletar o produto com o ID informado
+
+    try {
+        prep = conn.prepareStatement(sql);
+        prep.setInt(1, idProduto);  // Define o ID do produto a ser excluído
+        int rowsAffected = prep.executeUpdate();  // Executa o comando SQL
+        
+        if (rowsAffected > 0) {
+            JOptionPane.showMessageDialog(null, "Produto excluído com sucesso!");
+        } else {
+            JOptionPane.showMessageDialog(null, "Produto não encontrado.");
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Erro ao excluir produto: " + e.getMessage());
+    } finally {
+        try {
+            if (prep != null) prep.close();
+            if (conn != null) conn.close();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Erro ao fechar conexão: " + ex.getMessage());
+        }
+    }
+}
+
+    
 }
     
     
     
-    }
+    
     
     
     

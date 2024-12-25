@@ -47,9 +47,10 @@ INSERT INTO `produtos` (`id`, `nome`, `valor`, `status`) VALUES
 (5, 'PS2', 400, 'A Venda');
 
 
-ALTER TABLE `produtos` AUTO_INCREMENT = 6;
 
 
+
+select * from produtos;
 --
 -- Índices para tabelas despejadas
 --
